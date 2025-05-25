@@ -4,7 +4,7 @@ import sqlite3
 import time
 
 ALAGAMENTO_SEARCH_URL = 'https://www.acordacidade.com.br/page/{}/?s=alagamento'
-DATABASE = 'noticias.db'
+DATABASE = 'articles.db'
 
 def get_news_links(pages=3):
     links = set()
