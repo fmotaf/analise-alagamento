@@ -4,13 +4,28 @@ import numpy as np
 from pathlib import Path
 import pandas as pd
 
-from rasterio.features import dataset_mask
-from affine import Affine
 
 file_path = Path(__file__).resolve(strict=True).parent.parent
 IMAGE_PATH = file_path / 'static' / 'tiff' / 'Copernicus_DSM_COG_10_S13_00_W039_00_HAND.tif'
 print(IMAGE_PATH)
 
+with rasterio.open(IMAGE_PATH) as src:
+    hand = src.read(1)
+    transform = src.transform
+    crs = src.crs
+    flood_prone = hand < 5  # Boolean mask
+
+
+rows, cols = np.where(flood_prone)
+lons, lats = rasterio.transform.xy(transform, rows, cols)
+
+# Zip into points
+flood_points = list(zip(lons, lats))
+
+import pandas as pd
+
+df = pd.DataFrame({'lon': lons, 'lat': lats, 'hand': hand[rows, cols]})
+df.to_csv('flood_features.csv', index=False)
 
 with rasterio.open(IMAGE_PATH) as src:
     hand = src.read(1)
@@ -30,7 +45,6 @@ with rasterio.open(IMAGE_PATH) as src:
 
 
 def get_coords():
-
     rows, cols = np.where(flood_prone)
     lons, lats = rasterio.transform.xy(transform, rows, cols)
 
