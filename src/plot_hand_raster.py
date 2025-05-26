@@ -1,14 +1,14 @@
-import rasterio
-import geopandas as gpd
-import pandas as pd
-import matplotlib.pyplot as plt
-from shapely.geometry import Point
-from rasterio.plot import show
 from pathlib import Path
+
+import geopandas as gpd
+import matplotlib.pyplot as plt
+import pandas as pd
+import rasterio
+from rasterio.plot import show
 
 # Paths to your files
 file_path = Path(__file__).resolve(strict=True).parent.parent
-hand_path = file_path / 'static' / 'tiff' / 'Copernicus_DSM_COG_10_S13_00_W039_00_HAND.tif'
+hand_path = file_path / "static" / "tiff" / "Copernicus_DSM_COG_10_S13_00_W039_00_HAND.tif"
 flood_csv = "flood_features.csv"  # Your CSV should have 'lat' and 'lon' columns
 
 
@@ -20,11 +20,7 @@ with rasterio.open(hand_path) as src:
 
     # Load your extracted HAND points
     df = pd.read_csv(flood_csv)
-    gdf = gpd.GeoDataFrame(
-        df,
-        geometry=gpd.points_from_xy(df["lon"], df["lat"]),
-        crs="EPSG:4326"
-    ).to_crs(raster_crs)
+    gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df["lon"], df["lat"]), crs="EPSG:4326").to_crs(raster_crs)
 
     # Plot everything
     fig, ax = plt.subplots(figsize=(12, 8))
@@ -40,7 +36,7 @@ with rasterio.open(hand_path) as src:
         markersize=40,
         legend=True,
         legend_kwds={"label": "HAND Elevation (m)"},
-        alpha=0.9
+        alpha=0.9,
     )
 
     plt.axis("off")
