@@ -32,8 +32,7 @@ df_hand["key"] = 1
 df_clima["key"] = 1
 
 df_final = pd.merge(df_hand, df_clima, on="key").drop(columns="key")
-
 # === 6. Salva o resultado para modelagem ===
-df_final.to_csv("flood_dataset_full.csv", index=False)
+df_final.to_csv("flood_dataset_full_with_flood_occurrence.csv", index=False)
 print("✅ Dataset gerado com sucesso: flood_dataset_full.csv")
 print(f"Total de linhas: {len(df_final):,}")
