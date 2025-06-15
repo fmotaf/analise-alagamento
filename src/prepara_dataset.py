@@ -5,7 +5,7 @@ import pandas as pd
 # Caminhos dos arquivos
 json_path = "../data/json_dados_2010_2025_POWER_Point_Monthly_20100101_20251231_012d25S_038d95W_UTC.json"
 flood_pred_path = "../src/flood_predictions.csv"
-flood_feat_path = "../src/flood_features.csv"
+flood_feat_path = "../data/processed/features/flood_features.csv"
 
 # Carregar dados climáticos (NASA)
 with open(json_path, "r", encoding="utf-8") as f:

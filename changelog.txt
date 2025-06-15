@@ -1,0 +1,32 @@
+# Project Organization Changes - 2025-06-14
+
+## 1. Directory Structure Organization
+- Created a clear separation between source code, data, and static assets
+- Maintained existing directories but improved organization
+
+## 2. File Organization
+- Kept all Python source code in the `src` directory
+- Maintained data files in the `data` directory
+- Organized static assets in the `static` directory
+- Preserved configuration files (.gitignore, .flake8, pyproject.toml)
+
+## 3. Data Management
+- Kept the large dataset `flood_dataset_full_with_flood_occurrence.csv`
+- Maintained data models in the data directory
+- Preserved cache directory for temporary storage
+
+## 4. Static Assets
+- Organized PNG files in the static/png directory
+- Maintained recent static assets for visualization
+
+## 5. Development Environment
+- Preserved virtual environment (.venv)
+- Maintained pre-commit configuration
+- Kept IDE configuration files (.idea)
+
+## 6. Next Steps
+- Review and manually exclude older files as needed
+- Consider organizing notebooks in a more structured way
+- Review static assets for potential cleanup
+
+Note: No files were deleted in this process. All changes were organizational only.

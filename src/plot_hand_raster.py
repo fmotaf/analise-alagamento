@@ -7,7 +7,7 @@ import rasterio
 from rasterio.plot import show
 
 # Paths to your files
-file_path = Path(__file__).resolve(strict=True).parent.parent
+file_path = Path(__file__).resolve().parent.parent.parent
 hand_path = file_path / "static" / "tiff" / "Copernicus_DSM_COG_10_S13_00_W039_00_HAND.tif"
 flood_csv = "flood_features.csv"  # Your CSV should have 'lat' and 'lon' columns
 
