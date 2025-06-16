@@ -3,19 +3,24 @@ from pydantic import BaseModel
 import pandas as pd
 import joblib
 
-# === Load assets ===
+# === Load Data ===
 df = pd.read_csv("../notebooks/flood_features_3.csv")
-if 'year' not in df.columns and 'date' in df.columns:
-    df['year'] = df['date'].astype(str).str[:4].astype(int)
-    df['month'] = df['date'].astype(str).str[4:6].astype(int)
+df.columns = df.columns.str.strip().str.upper()
 
-print(df.columns.tolist())
+# Extract year/month if missing
+if "YEAR" not in df.columns and "DATE" in df.columns:
+    df["YEAR"] = df["DATE"].astype(str).str[:4].astype(int)
+    df["MONTH"] = df["DATE"].astype(str).str[4:6].astype(int)
 
-# === Load the pre-trained model ===
+# === Load Baseline Climate Lookup ===
+climate_lookup = pd.read_csv("../notebooks/climate_lookup.csv")
+climate_lookup.columns = climate_lookup.columns.str.upper()
+
+# === Load model ===
 model = joblib.load("../models/flood_model.pkl")
 
-# === Define API ===
-app = FastAPI(title="Flood Risk Predictor", version="1.0")
+# === API Setup ===
+app = FastAPI(title="Flood Risk Predictor", version="2.1")
 
 class FloodRequest(BaseModel):
     lat: float
@@ -25,27 +30,49 @@ class FloodRequest(BaseModel):
 
 @app.post("/predict")
 def predict_flood(req: FloodRequest):
-    # Find row in data
-    row = df[
-        (df["lat"].round(4) == round(req.lat, 4)) &
-        (df["lon"].round(4) == round(req.lon, 4)) &
-        (df["year"] == req.year) &
-        (df["month"] == req.month)
-    ]
-    
-    if row.empty:
-        raise HTTPException(status_code=404, detail="No data found for this location and date.")
-    
-    # Normalize column names to uppercase for feature selection
-    # Use the exact feature order as in model training
+    lat = round(req.lat, 4)
+    lon = round(req.lon, 4)
+    year = req.year
+    month = req.month
     features = ["PRECTOTCORR", "RH2M", "QV2M", "GWETROOT", "GWETPROF", "GWETTOP", "CLOUD_AMT"]
-    X = row[features]
+
+    # First try: lookup exact historical record
+    row = df[
+        (df["LAT"].round(4) == lat) &
+        (df["LON"].round(4) == lon) &
+        (df["YEAR"] == year) &
+        (df["MONTH"] == month)
+    ]
+
+    if not row.empty:
+        X = row[features]
+        pred = model.predict(X)[0]
+        return {
+            "source": "historical",
+            "lat": lat,
+            "lon": lon,
+            "year": year,
+            "month": month,
+            "predicted_flood": int(pred)
+        }
+
+    # Fallback: use climate baseline from same lat/lon/month
+    baseline = climate_lookup[
+        (climate_lookup["LAT"].round(4) == lat) &
+        (climate_lookup["LON"].round(4) == lon) &
+        (climate_lookup["MONTH"] == month)
+    ]
+
+    if baseline.empty:
+        raise HTTPException(status_code=404, detail="No climate baseline found for this location/month.")
+
+    X = baseline[features]
     pred = model.predict(X)[0]
-    
     return {
-        "lat": req.lat,
-        "lon": req.lon,
-        "year": req.year,
-        "month": req.month,
+        "source": "climate-baseline",
+        "lat": lat,
+        "lon": lon,
+        "year": year,
+        "month": month,
         "predicted_flood": int(pred)
     }
