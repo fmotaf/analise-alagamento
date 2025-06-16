@@ -28,6 +28,10 @@ class FloodRequest(BaseModel):
     year: int
     month: int
 
+@app.get("/")
+def read_root():
+    return {"message": "Welcome."}
+
 @app.post("/predict")
 def predict_flood(req: FloodRequest):
     lat = round(req.lat, 4)
