@@ -4,6 +4,8 @@ import pandas as pd
 import joblib
 from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Query
+from typing import List
 
 
 # === Base path of this file ===
@@ -12,6 +14,8 @@ BASE_DIR = Path(__file__).resolve().parent
 # === Load Data ===
 df = pd.read_csv(BASE_DIR / "flood_features_3.csv")
 df.columns = df.columns.str.strip().str.upper()
+
+df_pred = pd.read_csv("flood_predictions.csv")  
 
 # Extract year/month if missing
 if "YEAR" not in df.columns and "DATE" in df.columns:
@@ -45,6 +49,26 @@ class FloodRequest(BaseModel):
 @app.get("/")
 def read_root():
     return {"message": "Welcome."}
+
+
+@app.get("/flood-map")
+def get_flood_points(year: int = Query(...), month: int = Query(...)) -> List[dict]:
+    df_pred.columns = df_pred.columns.str.strip().str.lower()
+
+    filtered = df_pred[
+        (df_pred["year"] == year) &
+        (df_pred["month"] == month) &
+        (df_pred["predicted_flood"] == 1)
+    ]
+
+    points = (
+        filtered[["lat", "lon"]]
+        .drop_duplicates()
+        .round(5)
+        .to_dict(orient="records")
+    )
+    return points
+
 
 @app.post("/predict")
 def predict_flood(req: FloodRequest):

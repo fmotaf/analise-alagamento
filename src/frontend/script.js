@@ -1,24 +1,13 @@
 const map = L.map('map').setView([-12.25, -38.95], 12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-// === On map click, populate coordinates ===
 let userMarker = null;
-
-const lat_min = -12.35, lat_max = -12.15, lon_min = -39.10, lon_max = -38.90;
+let floodMarkers = [];
 
 map.on('click', function (e) {
   const { lat, lng } = e.latlng;
-  // Only allow points within region of interest
-  if (
-    lat < lat_min || lat > lat_max ||
-    lng < lon_min || lng > lon_max
-  ) {
-    alert("Selected point is outside the region of interest.");
-    return;
-  }
-  // Use 2 decimal places for grid match
-  document.getElementById('lat').value = lat.toFixed(2);
-  document.getElementById('lon').value = lng.toFixed(2);
+  document.getElementById('lat').value = lat.toFixed(5);
+  document.getElementById('lon').value = lng.toFixed(5);
 
   if (userMarker) {
     userMarker.setLatLng([lat, lng]);
@@ -27,27 +16,64 @@ map.on('click', function (e) {
   }
 });
 
-
 document.getElementById('flood-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  // Parse as 2 decimal float for API
-  const lat = parseFloat(parseFloat(document.getElementById('lat').value).toFixed(2));
-  const lon = parseFloat(parseFloat(document.getElementById('lon').value).toFixed(2));
+
+  const latField = document.getElementById('lat');
+  const lonField = document.getElementById('lon');
   const year = parseInt(document.getElementById('year').value);
   const month = parseInt(document.getElementById('month').value);
 
+  const lat = latField.value.trim();
+  const lon = lonField.value.trim();
+
+  // === Case A: Show flood map for all points
+  if (!lat || !lon) {
+    floodMarkers.forEach(marker => map.removeLayer(marker));
+    floodMarkers = [];
+
+    const response = await fetch(`https://api-weathered-dew-6668.fly.dev/flood-map?year=${year}&month=${month}`);
+    const points = await response.json();
+
+    if (!Array.isArray(points) || points.length === 0) {
+      document.getElementById('result').innerText = "✅ Nenhum ponto com alagamento previsto.";
+      return;
+    }
+
+    points.forEach(({ lat, lon }) => {
+      const marker = L.circleMarker([lat, lon], {
+        radius: 5,
+        color: 'red',
+        fillOpacity: 0.8
+      }).addTo(map);
+      floodMarkers.push(marker);
+    });
+
+    document.getElementById('result').innerText = `⚠️ ${points.length} pontos com risco de alagamento.`;
+    return;
+  }
+
+  // === Case B: Predict flood at specific point
   const response = await fetch('https://api-weathered-dew-6668.fly.dev/predict', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ lat, lon, year, month })
+    body: JSON.stringify({
+      lat: parseFloat(lat),
+      lon: parseFloat(lon),
+      year,
+      month
+    })
   });
+
 
   const data = await response.json();
 
-  console.log(data);
-
-  document.getElementById('result').innerText =
-    response.ok
-      ? (data.predicted_flood ? "⚠️ Flood predicted" : "✅ No flood expected")
-      : `❌ Error: ${data.detail || "Unknown error"}`;
+  if (response.ok) {
+    document.getElementById('result').innerText =
+      data.predicted_flood
+        ? "⚠️ Alagamento previsto neste ponto." 
+        : "✅ Sem alagamento previsto neste ponto.";
+  } else {
+    document.getElementById('result').innerText = `❌ Erro: ${data.detail || "Desconhecido"}`;
+  }
 });

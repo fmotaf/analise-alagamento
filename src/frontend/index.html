@@ -2,21 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Flood Forecast</title>
+  <title>Previsão de Alagamento</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>🌧️ Flood Forecast for Feira de Santana</h1>
+  <h1>🌧️ Previsão de alagamento para Feira de Santana</h1>
 
   <div id="map"></div>
 
   <form id="flood-form">
     <label>Latitude: <input type="text" id="lat" required readonly /></label>
     <label>Longitude: <input type="text" id="lon" required readonly /></label>
-    <label>Month: <input type="number" id="month" min="1" max="12" required /></label>
-    <label>Year: <input type="number" id="year" min="2010" max="2030" required /></label>
-    <button type="submit">Check Flood Risk</button>
+    <label>Mês: <input type="number" id="month" min="1" max="12" required /></label>
+    <label>Ano: <input type="number" id="year" min="2010" max="2030" required /></label>
+    <button type="submit">Verificar risco de alagamento</button>
   </form>
 
   <div id="result"></div>
