@@ -36,7 +36,7 @@ document.getElementById('flood-form').addEventListener('submit', async (e) => {
   const year = parseInt(document.getElementById('year').value);
   const month = parseInt(document.getElementById('month').value);
 
-  const response = await fetch('http://localhost:8000/predict/', {
+  const response = await fetch('https://api-weathered-dew-6668.fly.dev/predict', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ lat, lon, year, month })
