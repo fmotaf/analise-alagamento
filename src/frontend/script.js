@@ -19,44 +19,13 @@ map.on('click', function (e) {
 document.getElementById('flood-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const latField = document.getElementById('lat');
-  const lonField = document.getElementById('lon');
   const year = parseInt(document.getElementById('year').value);
   const month = parseInt(document.getElementById('month').value);
 
-//   const lat = latField.value.trim();
-//   const lon = lonField.value.trim();
 
   const lat = parseFloat(parseFloat(document.getElementById('lat').value).toFixed(2));
   const lon = parseFloat(parseFloat(document.getElementById('lon').value).toFixed(2));
 
-  // === Case A: Show flood map for all points
-  if (!lat || !lon) {
-    floodMarkers.forEach(marker => map.removeLayer(marker));
-    floodMarkers = [];
-
-    const response = await fetch(`https://api-weathered-dew-6668.fly.dev/flood-map?year=${year}&month=${month}`);
-    const points = await response.json();
-
-    if (!Array.isArray(points) || points.length === 0) {
-      document.getElementById('result').innerText = "✅ Nenhum ponto com alagamento previsto.";
-      return;
-    }
-
-    points.forEach(({ lat, lon }) => {
-      const marker = L.circleMarker([lat, lon], {
-        radius: 5,
-        color: 'red',
-        fillOpacity: 0.8
-      }).addTo(map);
-      floodMarkers.push(marker);
-    });
-
-    document.getElementById('result').innerText = `⚠️ ${points.length} pontos com risco de alagamento.`;
-    return;
-  }
-
-  // === Case B: Predict flood at specific point
   const response = await fetch('https://api-weathered-dew-6668.fly.dev/predict', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -67,7 +36,6 @@ document.getElementById('flood-form').addEventListener('submit', async (e) => {
       month
     })
   });
-
 
   const data = await response.json();
 
