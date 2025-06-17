@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent
 df = pd.read_csv(BASE_DIR / "flood_features_3.csv")
 df.columns = df.columns.str.strip().str.upper()
 
-df_pred = pd.read_csv("flood_predictions.csv")  
+df_pred = pd.read_csv(BASE_DIR / "flood_predictions.csv")  
 
 # Extract year/month if missing
 if "YEAR" not in df.columns and "DATE" in df.columns:
