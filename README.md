@@ -98,3 +98,6 @@ No contexto deste projeto, o Random Forest é utilizado para prever a ocorrênci
 ```
 
 > **Obs:** Para mais detalhes, consulte os notebooks e scripts em cada pasta.
+
+## Integrantes da equipe:
+Daniel Lucas, Daniel Menezes, Evelli Boaventura, Fernando Mota, Gabriel Galindo, Lano Oliveira, Lucas Melo.
