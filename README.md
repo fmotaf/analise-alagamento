@@ -42,6 +42,8 @@ No contexto deste projeto, o Random Forest é utilizado para prever a ocorrênci
    ```
 
 6. **Acesse o frontend:**
+   - Dentro da pasta ligue o servidor usando python:
+   `python -m http.server <porta>`
    - Abra o arquivo `src/frontend/index.html` no navegador.
 
 ## Principais arquivos
@@ -57,9 +59,14 @@ No contexto deste projeto, o Random Forest é utilizado para prever a ocorrênci
 
 ```
 .
+|   .flake8
+|   .gitattributes
+|   .gitignore
+|   .pre-commit-config.yaml
+|   pyproject.toml
 |   README.md
 |   requirements.txt
-|   pyproject.toml
+|   tree.txt
 |
 +---src
 |   +---api
@@ -68,6 +75,11 @@ No contexto deste projeto, o Random Forest é utilizado para prever a ocorrênci
 |   |   +---collection
 |   |   +---processing
 |   |   +---validation
+|   +---frontend
+|   |   +---index.html
+|   |   +---styles.css
+|   |   +---script.js
+|   |   +---map_points.json
 |   +---models
 |   |   +---training
 |   |   +---prediction
