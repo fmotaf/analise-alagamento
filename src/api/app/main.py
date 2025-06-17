@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import pandas as pd
 import joblib
 from pathlib import Path
+from fastapi.middleware.cors import CORSMiddleware
 
 
 # === Base path of this file ===
@@ -26,6 +27,14 @@ model = joblib.load(BASE_DIR / "flood_model.pkl")
 
 # === API Setup ===
 app = FastAPI(title="Flood Risk Predictor", version="2.1")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class FloodRequest(BaseModel):
     lat: float
