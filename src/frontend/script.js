@@ -6,8 +6,8 @@ let floodMarkers = [];
 
 map.on('click', function (e) {
   const { lat, lng } = e.latlng;
-  document.getElementById('lat').value = lat.toFixed(5);
-  document.getElementById('lon').value = lng.toFixed(5);
+  document.getElementById('lat').value = lat.toFixed(2);
+  document.getElementById('lon').value = lng.toFixed(2);
 
   if (userMarker) {
     userMarker.setLatLng([lat, lng]);
@@ -24,8 +24,11 @@ document.getElementById('flood-form').addEventListener('submit', async (e) => {
   const year = parseInt(document.getElementById('year').value);
   const month = parseInt(document.getElementById('month').value);
 
-  const lat = latField.value.trim();
-  const lon = lonField.value.trim();
+//   const lat = latField.value.trim();
+//   const lon = lonField.value.trim();
+
+  const lat = parseFloat(parseFloat(document.getElementById('lat').value).toFixed(2));
+  const lon = parseFloat(parseFloat(document.getElementById('lon').value).toFixed(2));
 
   // === Case A: Show flood map for all points
   if (!lat || !lon) {
